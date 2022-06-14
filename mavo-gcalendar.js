@@ -3,7 +3,7 @@
 /**
  * Google Calendar backend plugin for Mavo
  * @author Dmitry Sharabin and contributors
- * @version %%VERSION%%
+ * @version 0.1.0
  */
 
 (($) => {
@@ -11,19 +11,72 @@
 
 	Mavo.Plugins.register("gcalendar", {});
 
-	const _ = Mavo.Backend.register($.Class({
-		extends: Mavo.Backend,
-		id: "Google Calendar",
+	const _ = Mavo.Backend.register(class GCalendar extends Mavo.Backend {
+		id = "Google Calendar"
 
 		constructor (url, o) {
+			super(url, o);
+
 			this.permissions.on(["read", "login"]);
 
 			this.login(true);
-		},
+		}
 
 		update (url, o) {
-			this.super.update.call(this, url, o);
-		},
+			super.update.call(this, url, o);
+
+			const params = this.url.searchParams;
+			this.calendar = o.calendar ?? params.get("src") ?? "primary";
+
+			this.searchParams = Mavo.options(o.options ?? "");
+		}
+
+		async load () {
+			let response;
+			if (this.isAuthenticated()) {
+				response = await fetch(this.apiURL(), {
+					headers: {
+						Authorization: `Bearer ${this.accessToken}`
+					}
+				});
+
+				if (response.status === 401) {
+					// Access token we have is invalid, discard it.
+					await this.logout();
+				}
+			}
+			else {
+				// Try an unauthenticated request (with the API key) — let authors work with public calendars.
+				response = await fetch(this.apiURL(false));
+			}
+
+			// If the previous request fails, try to send requests without the API key to get the real reason why we can't access the calendar.
+			if (!response.ok && !this.isAuthenticated()) {
+				response = await fetch(this.apiURL());
+			}
+
+			// The request failed? It doesn't make sense to proceed.
+			if (!response.ok) {
+				const error = (await response.json()).error.message;
+
+				switch (response.status) {
+					case 403:
+						// No read permissions
+						this.mavo.error(this.mavo._("mv-gcalendar-read-permission-denied"));
+						break;
+					case 404:
+						// No calendar
+						this.mavo.error(this.mavo._("mv-gcalendar-calendar-not-found"));
+						break;
+					default:
+						Mavo.warn(error);
+				}
+
+				return null;
+			}
+
+			return (await response.json()).items ?? [];
+		}
 
 		async login (passive) {
 			try {
@@ -39,13 +92,13 @@
 					this.logout();
 				}
 			}
-		},
+		}
 
 		async logout () {
 			await this.oAuthLogout();
 
 			this.user = null;
-		},
+		}
 
 		async getUser () {
 			if (this.user) {
@@ -60,28 +113,58 @@
 				info
 			};
 
-			$.fire(this.mavo.element, "mv-login", { backend: this });
-		},
-
-		oAuthParams: () => `&redirect_uri=${encodeURIComponent("https://auth.mavo.io")}&response_type=code&scope=${encodeURIComponent(_.scopes.join(" "))}`,
-
-		static: {
-			apiDomain: "https://www.googleapis.com/calendar/v3/calendars/",
-			oAuth: "https://accounts.google.com/o/oauth2/auth",
-			scopes: [
-				"https://www.googleapis.com/auth/calendar.readonly",
-				"https://www.googleapis.com/auth/calendar.events.readonly",
-				"https://www.googleapis.com/auth/calendar.settings.readonly",
-				"https://www.googleapis.com/auth/userinfo.profile"
-			],
-			useCache: false,
-
-			test (value) {
-				return /^https:\/\/...\/?.*/.test(value);
+			// Make the plugin work both with the stable and the future versions of Mavo.
+			if (this instanceof EventTarget) {
+				$.fire(this, "mv-login");
+			} else {
+				// Mavo v0.2.4-
+				$.fire(this.mavo.element, "mv-login", { backend: this });
 			}
 		}
-	}));
 
-	Mavo.Locale.register("en", {});
+		apiURL (withCredentials = true) {
+			const params = { ..._.defaultParams, ...this.searchParams };
+			
+			const searchParams = new URLSearchParams();
+			for(const [key, value] of Object.entries(params)) {
+				searchParams.set(key, value);
+			}
+
+			if (!withCredentials) {
+				searchParams.set("key", _.apiKey)
+			}
+			
+			return `${_.apiDomain}${encodeURIComponent(this.calendar)}/events?${searchParams}`;
+		}
+
+		oAuthParams = () => `&redirect_uri=${encodeURIComponent("https://auth.mavo.io")}&response_type=code&scope=${encodeURIComponent(_.scopes.join(" "))}`
+
+		static apiDomain = "https://www.googleapis.com/calendar/v3/calendars/"
+		static oAuth = "https://accounts.google.com/o/oauth2/auth"
+		static scopes = [
+			"https://www.googleapis.com/auth/calendar.events.readonly",
+			"https://www.googleapis.com/auth/calendar.settings.readonly",
+			"https://www.googleapis.com/auth/userinfo.profile"
+		]
+		static key = "380712995757-4e9augrln1ck0soj8qgou0b4tnr30o42.apps.googleusercontent.com"
+		static apiKey = "AIzaSyCiAkSCE96adO_mFItVdS9fi7CXfTiwhe4"
+		static useCache = false
+
+		// Reserved for future use (if needed)
+		static defaultParams = {}
+
+		/**
+		 * Determines whether the Google Calendar backend is used.
+		 * @param {string} value The mv-source/mv-init value.
+		 */
+		static test (value) {
+			return /^https:\/\/calendar.google.com\/calendar\/?.*/.test(value);
+		}
+	});
+
+	Mavo.Locale.register("en", {
+		"mv-gcalendar-read-permission-denied": "You don't have permission to read data from the calendar. Please, log in.",
+		"mv-gcalendar-calendar-not-found": "We couldn't find the calendar you specified."
+	});
 
 })(Bliss);
