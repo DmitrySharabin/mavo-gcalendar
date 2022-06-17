@@ -122,6 +122,53 @@
 			}
 		}
 
+		// === Actions ===
+
+		async create_event (...events) {
+			if (!this.isAuthenticated()) {
+				this.mavo.error(this.mavo._("mv-gcalendar-create-event-not-authenticated"));
+				return;
+			}
+
+			const baseURL = _.apiDomain + this.calendar + "/events/quickAdd";
+
+			for (const event of events) {
+				const url = baseURL + "?text=" + encodeURIComponent(event);
+				const response = await fetch(url, {
+					method: "POST",
+					headers: {
+						Authorization: `Bearer ${this.accessToken}`
+					}
+				});
+
+				if (!response.ok) {
+					const error = (await response.json()).error.message;
+
+					switch (response.status) {
+						case 403:
+							// No write permissions
+							this.mavo.error(this.mavo._("mv-gcalendar-write-permission-denied"));
+							break;
+						case 404:
+							// No calendar
+							this.mavo.error(this.mavo._("mv-gcalendar-calendar-not-found"));
+							break;
+						default:
+							Mavo.warn(error);
+					}
+				}
+			}
+
+			const data = await this.load();
+			if (Mavo.prototype.push) {
+				$.fire(this, "mv-remotedatachange", { data });
+			}
+			else {
+				// Mavo v0.2.4-
+				this.mavo.render(data);
+			}
+		}
+
 		apiURL (withCredentials = true) {
 			const params = { ..._.defaultParams, ...this.searchParams };
 			
@@ -142,7 +189,7 @@
 		static apiDomain = "https://www.googleapis.com/calendar/v3/calendars/"
 		static oAuth = "https://accounts.google.com/o/oauth2/auth"
 		static scopes = [
-			"https://www.googleapis.com/auth/calendar.events.readonly",
+			"https://www.googleapis.com/auth/calendar.events",
 			"https://www.googleapis.com/auth/calendar.settings.readonly",
 			"https://www.googleapis.com/auth/userinfo.profile"
 		]
@@ -162,9 +209,22 @@
 		}
 	});
 
+	Mavo.Actions.Functions.create_event = function (...events) {
+		if (!events.length || !events[0].length) {
+			return;
+		}
+
+		const node = Mavo.Node.getClosest(Mavo.Functions.$evt.target);
+		const mavo = node.mavo;
+
+		mavo.source.create_event?.(...events);
+	}
+
 	Mavo.Locale.register("en", {
 		"mv-gcalendar-read-permission-denied": "You don't have permission to read data from the calendar. Please, log in.",
-		"mv-gcalendar-calendar-not-found": "We couldn't find the calendar you specified."
+		"mv-gcalendar-write-permission-denied": "You don't have permission to write data to the calendar.",
+		"mv-gcalendar-calendar-not-found": "We couldn't find the calendar you specified.",
+		"mv-gcalendar-create-event-not-authenticated": "Only authenticated users can create events. Please, log in."
 	});
 
 })(Bliss);

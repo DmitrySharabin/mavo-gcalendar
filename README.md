@@ -1,7 +1,5 @@
 # Google Calender Backend
 
-**Note:** Please keep in mind that **the plugin only allows you to read events from the calendar** and not create and/or update them. It might change in the future. So stay tuned! 😉
-
 ## Setting up
 
 1. On your computer, open [Google Calendar](https://calendar.google.com/).
@@ -36,6 +34,21 @@ Every event has _numerous_ properties, the most useful of which are the followin
 
 **Note:** For the list of _all_ the supported properties (with description), see [the documentation](https://developers.google.com/calendar/api/v3/reference/events#resource-representations).
 
+## Actions
+
+The plugin supports the following custom actions:
+
+- `create_event(event)` to create an event based on a simple text string.
+- `create_event(event1, event2, ...)` to create multiple different events.
+
+### Create events: The `create_event()` function
+
+The only parameter of the function is the text describing the event to be created. E.g., `create_event("Appointment at Somewhere on June 3rd 10am-10:25am")`.
+
+If you provide multiple values, you will get multiple new events.
+
+**Note:** To be able to create events, the user must be logged in and has the corresponding permissions.
+
 ## Customization
 
 The plugin supports a number of options for customizing the way it reads data from a calendar. You can specify these options by using the `mv-source-options` (`mv-init-options`) attribute. To separate the options, you can use either commas or semicolons.
@@ -57,7 +70,9 @@ For more information, see the [Optional query parameters](https://developers.goo
 | id | Value |
 | ----- | ----------- |
 | `mv-gcalendar-read-permission-denied` | You don't have permission to read data from the calendar. Please, log in. |
+| `mv-gcalendar-write-permission-denied` | You don't have permission to write data to the calendar. |
 | `mv-gcalendar-calendar-not-found` | We couldn't find the calendar you specified. |
+| `mv-gcalendar-create-event-not-authenticated` | Only authenticated users can create events. Please, log in. |
 
 ## Demo
 
