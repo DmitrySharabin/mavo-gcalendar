@@ -70,6 +70,8 @@ The parameter of the function is the event(s) to delete. This could be an entire
 
 E.g., after clicking the `<button mv-action="delete_event(events where starts(summary, 'Appointment'))">Delete Event</button>` button the events which `summary` property starts with “Appointment” will be deleted.
 
+Especially with the `delete_event()` function, you may find the [`where`](https://mavo.io/docs/functions/#where) operator useful.
+
 **Warning:** You can't undo event deletion.
 
 **Note:** To be able to delete events, the user must be logged in and has the corresponding permissions.
