@@ -38,8 +38,8 @@ Every event has _numerous_ properties, the most useful of which are the followin
 
 The plugin supports the following custom actions:
 
-- `create_event(event)` to create an event based on a simple text string.
-- `create_event(event1, event2, ...)` to create multiple different events.
+- `create_event(text)` to create an event based on a simple text string.
+- `create_event(text1, text2, ...)` to create multiple different events.
 
 ### Create events: The `create_event()` function
 
