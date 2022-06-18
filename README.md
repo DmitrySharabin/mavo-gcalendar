@@ -40,6 +40,7 @@ The plugin supports the following custom actions:
 
 - `create_event(text)` to create an event based on a simple text string.
 - `create_event(text1, text2, ...)` to create multiple different events.
+- `update(event, values)` to update one or more events.
 - `delete_event(events)` to delete the entire collection of events.
 - `delete_event(event1, event2, ...)` to delete multiple different events.
 
@@ -50,6 +51,18 @@ The parameter of the function is the text(s) describing the event(s) to be creat
 If you provide multiple values, you will get multiple new events.
 
 **Note:** To be able to create events, the user must be logged in and has the corresponding permissions.
+
+### Update event: The `update_event()` function
+
+You can update events with the `update_event()` function. The first argument is the event(s) you want to update, and the second is the new value(s) of some (or all) of its properties (fields). The field values you specify replace the existing values. Note that you can use this to update multiple events at once.
+
+To specify new field values for the event(s), use the [`group()`](https://mavo.io/docs/functions/#group) function.
+
+E.g., `<button mv-action="update_event(last(2, events), group(summary: 'Mavo is awesome!'))">Update two last events</button>`.
+
+**Warning:** You can't undo the event update.
+
+**Note:** To be able to update events, the user must be logged in and has the corresponding permissions.
 
 ### Delete events: The `delete_event()` function
 
@@ -88,6 +101,8 @@ For more information, see the [Optional query parameters](https://developers.goo
 | `mv-gcalendar-delete-event-not-authenticated` | Only authenticated users can delete events. Please, log in. |
 | `mv-gcalendar-event-already-deleted` | Event “{event}” has already been deleted. |
 | `mv-gcalendar-delete-not-existing-event` | The parameter of delete_event() needs to be an existing event, {event} is not. |
+| `mv-gcalendar-update-event-not-authenticated` | Only authenticated users can update events. Please, log in. |
+| `mv-gcalendar-update-not-existing-event` | The first parameter of update_event() needs to be one or more existing events, {event} is not. |
 
 ## Demo
 

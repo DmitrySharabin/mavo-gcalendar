@@ -226,6 +226,82 @@
 			}
 		}
 
+		async update_event (ref, values) {
+			if (!this.isAuthenticated()) {
+				this.mavo.error(this.mavo._("mv-gcalendar-update-event-not-authenticated"));
+				return;
+			}
+
+			const baseURL = _.apiDomain + this.calendar + "/events/";
+
+			const wasArray = Array.isArray(ref);
+			const nodes = [];
+			for (const node of Mavo.Actions.getNodes(ref)) {
+				if (node instanceof Mavo.Collection) {
+					nodes.push(...node.children)
+				}
+				else {
+					nodes.push(node);
+				}
+			}
+
+			if (!nodes.length) {
+				Mavo.warn(this.mavo._("mv-gcalendar-update-not-existing-event", { ref: Mavo.safeToJSON(ref) }));
+			}
+			else {
+				let result = Mavo.Script.binaryOperation(wasArray? nodes : nodes[0], values, {
+					scalar: async (node, value) => {
+						if (!node || !value) {
+							return null;
+						}
+
+						const event = node.getData();
+						if (event.kind !== "calendar#event") {
+							Mavo.warn(this.mavo._("mv-gcalendar-update-not-existing-event", { event }));
+							return null;
+						}
+
+						const url = baseURL + event.id;
+						const response = await fetch(url, {
+							method: "PATCH",
+							headers: {
+								Authorization: `Bearer ${this.accessToken}`,
+								"Content-type": "application/json; charset=UTF-8"
+							},
+							body: JSON.stringify(value)
+						});
+
+						if (!response.ok) {
+							const error = (await response.json()).error.message;
+
+							switch (response.status) {
+								case 403:
+									// No write permissions
+									this.mavo.error(this.mavo._("mv-gcalendar-write-permission-denied"));
+									break;
+								default:
+									Mavo.warn(error);
+							}
+						}
+
+						return Promise.resolve(response);
+					}
+				});
+
+				result = Array.isArray(result)? result : [result];
+				await Promise.allSettled(result);
+
+				const data = await this.load();
+				if (Mavo.prototype.push) {
+					$.fire(this, "mv-remotedatachange", { data });
+				}
+				else {
+					// Mavo v0.2.4-
+					this.mavo.render(data);
+				}
+			}
+		}
+
 		apiURL (withCredentials = true) {
 			const params = { ..._.defaultParams, ...this.searchParams };
 			
@@ -287,6 +363,17 @@
 		mavo.source.delete_event?.(...ref);
 	}
 
+	Mavo.Actions.Functions.update_event = function (ref, values) {
+		if (!ref) {
+			return;
+		}
+
+		const node = Mavo.Node.getClosest(Mavo.Functions.$evt.target);
+		const mavo = node.mavo;
+
+		mavo.source.update_event?.(ref, values);
+	}
+
 	Mavo.Locale.register("en", {
 		"mv-gcalendar-read-permission-denied": "You don't have permission to read data from the calendar. Please, log in.",
 		"mv-gcalendar-write-permission-denied": "You don't have permission to write data to the calendar.",
@@ -295,6 +382,8 @@
 		"mv-gcalendar-delete-event-not-authenticated": "Only authenticated users can delete events. Please, log in.",
 		"mv-gcalendar-event-already-deleted": "Event “{event}” has already been deleted.",
 		"mv-gcalendar-delete-not-existing-event": "The parameter of delete_event() needs to be an existing event, {event} is not.",
+		"mv-gcalendar-update-event-not-authenticated": "Only authenticated users can update events. Please, log in.",
+		"mv-gcalendar-update-not-existing-event": "The first parameter of update_event() needs to be one or more existing events, {event} is not."
 	});
 
 })(Bliss);
