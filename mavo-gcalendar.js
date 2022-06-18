@@ -132,6 +132,8 @@
 
 			const baseURL = this.apiURL({ action: "CREATE" });
 
+			this.mavo.inProgress = this.mavo._("mv-gcalendar-creating-event");
+
 			for (const text of texts) {
 				const url = baseURL + encodeURIComponent(text);
 				const response = await fetch(url, {
@@ -163,6 +165,8 @@
 				// Mavo v0.2.4-
 				this.mavo.render(data);
 			}
+
+			this.mavo.inProgress = false;
 		}
 
 		async delete_event (...ref) {
@@ -183,6 +187,8 @@
 			}
 
 			const baseURL = this.apiURL({ action: "DELETE" });
+
+			this.mavo.inProgress = this.mavo._("mv-gcalendar-deleting-event");
 
 			for (const event of events) {
 				if (event.kind !== "calendar#event") {
@@ -224,6 +230,8 @@
 				// Mavo v0.2.4-
 				this.mavo.render(data);
 			}
+
+			this.mavo.inProgress = false;
 		}
 
 		async update_event (ref, values) {
@@ -249,6 +257,8 @@
 				Mavo.warn(this.mavo._("mv-gcalendar-update-not-existing-event", { ref: Mavo.safeToJSON(ref) }));
 			}
 			else {
+				this.mavo.inProgress = this.mavo._("mv-gcalendar-updating-event");
+
 				let result = Mavo.Script.binaryOperation(wasArray? nodes : nodes[0], values, {
 					scalar: async (node, value) => {
 						if (!node || !value) {
@@ -299,6 +309,8 @@
 					// Mavo v0.2.4-
 					this.mavo.render(data);
 				}
+
+				this.mavo.inProgress = false;
 			}
 		}
 
@@ -385,7 +397,10 @@
 		"mv-gcalendar-event-already-deleted": "Event “{event}” has already been deleted.",
 		"mv-gcalendar-delete-not-existing-event": "The parameter of delete_event() needs to be an existing event, {event} is not.",
 		"mv-gcalendar-update-event-not-authenticated": "Only authenticated users can update events. Please, log in.",
-		"mv-gcalendar-update-not-existing-event": "The first parameter of update_event() needs to be one or more existing events, {event} is not."
+		"mv-gcalendar-update-not-existing-event": "The first parameter of update_event() needs to be one or more existing events, {event} is not.",
+		"mv-gcalendar-creating-event": "Creating event",
+		"mv-gcalendar-updating-event": "Updating event",
+		"mv-gcalendar-deleting-event": "Deleting event"
 	});
 
 	function getMavo (node) {

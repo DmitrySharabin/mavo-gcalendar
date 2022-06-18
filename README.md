@@ -105,6 +105,9 @@ For more information, see the [Optional query parameters](https://developers.goo
 | `mv-gcalendar-delete-not-existing-event` | The parameter of delete_event() needs to be an existing event, {event} is not. |
 | `mv-gcalendar-update-event-not-authenticated` | Only authenticated users can update events. Please, log in. |
 | `mv-gcalendar-update-not-existing-event` | The first parameter of update_event() needs to be one or more existing events, {event} is not. |
+| `mv-gcalendar-creating-event` | Creating event |
+| `mv-gcalendar-updating-event` | Updating event |
+| `mv-gcalendar-deleting-event` | Deleting event |
 
 ## Demo
 
