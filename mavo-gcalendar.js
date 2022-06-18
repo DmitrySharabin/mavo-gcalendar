@@ -242,7 +242,6 @@
 		static oAuth = "https://accounts.google.com/o/oauth2/auth"
 		static scopes = [
 			"https://www.googleapis.com/auth/calendar.events",
-			"https://www.googleapis.com/auth/calendar.settings.readonly",
 			"https://www.googleapis.com/auth/userinfo.profile"
 		]
 		static key = "380712995757-4e9augrln1ck0soj8qgou0b4tnr30o42.apps.googleusercontent.com"
