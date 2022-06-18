@@ -124,7 +124,7 @@
 
 		// === Actions ===
 
-		async create_event (...events) {
+		async create_event (...texts) {
 			if (!this.isAuthenticated()) {
 				this.mavo.error(this.mavo._("mv-gcalendar-create-event-not-authenticated"));
 				return;
@@ -132,8 +132,8 @@
 
 			const baseURL = _.apiDomain + this.calendar + "/events/quickAdd";
 
-			for (const event of events) {
-				const url = baseURL + "?text=" + encodeURIComponent(event);
+			for (const text of texts) {
+				const url = baseURL + "?text=" + encodeURIComponent(text);
 				const response = await fetch(url, {
 					method: "POST",
 					headers: {
@@ -260,15 +260,15 @@
 		}
 	});
 
-	Mavo.Actions.Functions.create_event = function (...events) {
-		if (!events.length || !events[0].length) {
+	Mavo.Actions.Functions.create_event = function (...texts) {
+		if (!texts.length || !texts[0].length) {
 			return;
 		}
 
 		const node = Mavo.Node.getClosest(Mavo.Functions.$evt.target);
 		const mavo = node.mavo;
 
-		mavo.source.create_event?.(...events);
+		mavo.source.create_event?.(...texts);
 	}
 
 	Mavo.Actions.Functions.delete_event = function (...ref) {
