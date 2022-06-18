@@ -149,10 +149,6 @@
 							// No write permissions
 							this.mavo.error(this.mavo._("mv-gcalendar-write-permission-denied"));
 							break;
-						case 404:
-							// No calendar
-							this.mavo.error(this.mavo._("mv-gcalendar-calendar-not-found"));
-							break;
 						default:
 							Mavo.warn(error);
 					}
