@@ -346,9 +346,7 @@
 			return;
 		}
 
-		const node = Mavo.Node.getClosest(Mavo.Functions.$evt.target);
-		const mavo = node.mavo;
-
+		const mavo = getMavo(Mavo.Functions.$evt.target);
 		mavo.source.create_event?.(...texts);
 	}
 
@@ -357,9 +355,7 @@
 			return;
 		}
 
-		const node = Mavo.Node.getClosest(Mavo.Functions.$evt.target);
-		const mavo = node.mavo;
-
+		const mavo = getMavo(Mavo.Functions.$evt.target);
 		mavo.source.delete_event?.(...ref);
 	}
 
@@ -368,9 +364,7 @@
 			return;
 		}
 
-		const node = Mavo.Node.getClosest(Mavo.Functions.$evt.target);
-		const mavo = node.mavo;
-
+		const mavo = getMavo(Mavo.Functions.$evt.target);
 		mavo.source.update_event?.(ref, values);
 	}
 
@@ -386,4 +380,9 @@
 		"mv-gcalendar-update-not-existing-event": "The first parameter of update_event() needs to be one or more existing events, {event} is not."
 	});
 
+	function getMavo (node) {
+		node = Mavo.Node.getClosest(node);
+
+		return node.mavo;
+	}
 })(Bliss);
