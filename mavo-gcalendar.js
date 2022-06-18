@@ -47,7 +47,7 @@
 			}
 			else {
 				// Try an unauthenticated request (with the API key) — let authors work with public calendars.
-				response = await fetch(this.apiURL(false));
+				response = await fetch(this.apiURL({ withCredentials: false }));
 			}
 
 			// If the previous request fails, try to send requests without the API key to get the real reason why we can't access the calendar.
@@ -130,10 +130,10 @@
 				return;
 			}
 
-			const baseURL = _.apiDomain + this.calendar + "/events/quickAdd";
+			const baseURL = this.apiURL({ action: "CREATE" });
 
 			for (const text of texts) {
-				const url = baseURL + "?text=" + encodeURIComponent(text);
+				const url = baseURL + encodeURIComponent(text);
 				const response = await fetch(url, {
 					method: "POST",
 					headers: {
@@ -182,7 +182,7 @@
 				events.push(node.getData());
 			}
 
-			const baseURL = _.apiDomain + this.calendar + "/events/";
+			const baseURL = this.apiURL({ action: "DELETE" });
 
 			for (const event of events) {
 				if (event.kind !== "calendar#event") {
@@ -232,7 +232,7 @@
 				return;
 			}
 
-			const baseURL = _.apiDomain + this.calendar + "/events/";
+			const baseURL = this.apiURL({ action: "UPDATE" });
 
 			const wasArray = Array.isArray(ref);
 			const nodes = [];
@@ -302,19 +302,27 @@
 			}
 		}
 
-		apiURL (withCredentials = true) {
-			const params = { ..._.defaultParams, ...this.searchParams };
-			
-			const searchParams = new URLSearchParams();
-			for(const [key, value] of Object.entries(params)) {
-				searchParams.set(key, value);
-			}
+		apiURL ({ action = "GET", withCredentials = true } = {}) {
+			switch (action) {
+				case "GET":
+					const params = { ..._.defaultParams, ...this.searchParams };
 
-			if (!withCredentials) {
-				searchParams.set("key", _.apiKey)
+					const searchParams = new URLSearchParams();
+					for (const [key, value] of Object.entries(params)) {
+						searchParams.set(key, value);
+					}
+
+					if (!withCredentials) {
+						searchParams.set("key", _.apiKey)
+					}
+					
+					return `${_.apiDomain}${encodeURIComponent(this.calendar)}/events?${searchParams}`;
+				case "CREATE":
+					return _.apiDomain + this.calendar + "/events/quickAdd?text=";
+				case "UPDATE":
+				case "DELETE":
+					return _.apiDomain + this.calendar + "/events/";
 			}
-			
-			return `${_.apiDomain}${encodeURIComponent(this.calendar)}/events?${searchParams}`;
 		}
 
 		oAuthParams = () => `&redirect_uri=${encodeURIComponent("https://auth.mavo.io")}&response_type=code&scope=${encodeURIComponent(_.scopes.join(" "))}`
