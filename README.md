@@ -40,6 +40,8 @@ The plugin supports the following custom actions:
 
 - `create_event(text)` to create an event based on a simple text string.
 - `create_event(text1, text2, ...)` to create multiple different events.
+- `delete_event(events)` to delete the entire collection of events.
+- `delete_event(event1, event2, ...)` to delete multiple different events.
 
 ### Create events: The `create_event()` function
 
@@ -48,6 +50,16 @@ The parameter of the function is the text(s) describing the event(s) to be creat
 If you provide multiple values, you will get multiple new events.
 
 **Note:** To be able to create events, the user must be logged in and has the corresponding permissions.
+
+### Delete events: The `delete_event()` function
+
+The parameter of the function is the event(s) to delete. This could be an entire collection, or specific items.
+
+E.g., after clicking the `<button mv-action="delete_event(events where starts(summary, 'Appointment'))">Delete Event</button>` button the events which `summary` property starts with “Appointment” will be deleted.
+
+**Warning:** You can't undo event deletion.
+
+**Note:** To be able to delete events, the user must be logged in and has the corresponding permissions.
 
 ## Customization
 
@@ -73,6 +85,8 @@ For more information, see the [Optional query parameters](https://developers.goo
 | `mv-gcalendar-write-permission-denied` | You don't have permission to write data to the calendar. |
 | `mv-gcalendar-calendar-not-found` | We couldn't find the calendar you specified. |
 | `mv-gcalendar-create-event-not-authenticated` | Only authenticated users can create events. Please, log in. |
+| `mv-gcalendar-delete-event-not-authenticated` | Only authenticated users can delete events. Please, log in. |
+| `mv-gcalendar-event-already-deleted` | Event “{event}” has already been deleted. |
 
 ## Demo
 
