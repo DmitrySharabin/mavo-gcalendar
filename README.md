@@ -87,6 +87,7 @@ For more information, see the [Optional query parameters](https://developers.goo
 | `mv-gcalendar-create-event-not-authenticated` | Only authenticated users can create events. Please, log in. |
 | `mv-gcalendar-delete-event-not-authenticated` | Only authenticated users can delete events. Please, log in. |
 | `mv-gcalendar-event-already-deleted` | Event “{event}” has already been deleted. |
+| `mv-gcalendar-delete-not-existing-event` | The parameter of delete_event() needs to be an existing event, {event} is not. |
 
 ## Demo
 

@@ -185,6 +185,11 @@
 			const baseURL = _.apiDomain + this.calendar + "/events/";
 
 			for (const event of events) {
+				if (event.kind !== "calendar#event") {
+					Mavo.warn(this.mavo._("mv-gcalendar-delete-not-existing-event", { event }));
+					continue;
+				}
+
 				const url = baseURL + event.id;
 				const response = await fetch(url, {
 					method: "DELETE",
@@ -288,7 +293,8 @@
 		"mv-gcalendar-calendar-not-found": "We couldn't find the calendar you specified.",
 		"mv-gcalendar-create-event-not-authenticated": "Only authenticated users can create events. Please, log in.",
 		"mv-gcalendar-delete-event-not-authenticated": "Only authenticated users can delete events. Please, log in.",
-		"mv-gcalendar-event-already-deleted": "Event “{event}” has already been deleted."
+		"mv-gcalendar-event-already-deleted": "Event “{event}” has already been deleted.",
+		"mv-gcalendar-delete-not-existing-event": "The parameter of delete_event() needs to be an existing event, {event} is not.",
 	});
 
 })(Bliss);
