@@ -43,7 +43,7 @@ The plugin supports the following custom actions:
 
 ### Create events: The `create_event()` function
 
-The only parameter of the function is the text describing the event to be created. E.g., `<button mv-action="create_event('Appointment at Somewhere on June 3rd 10am-10:25am')">Create Event</button>`.
+The parameter of the function is the text(s) describing the event(s) to be created. E.g., `<button mv-action="create_event('Appointment at Somewhere on June 3rd 10am-10:25am')">Create Event</button>`.
 
 If you provide multiple values, you will get multiple new events.
 
