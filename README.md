@@ -167,8 +167,8 @@ For more information, see the [Optional query parameters](https://developers.goo
     <p property="end">End: <input type="datetime-local" property="dateTime" value="2022-06-20T13:00" /></p>
   </article>
 
-  <button mv-action="create_event('Appointment #1 at Somewhere on July 3rd 10am-10:25am')">Create Event</button>
-  <button mv-action="create_event(event)">Create Event</button>
+  <button mv-action="create_event('Appointment #1 at Somewhere on July 3rd 10am-10:25am')">Create Event (from text)</button>
+  <button mv-action="create_event(event)">Create Event (with specified properties)</button>
   <button mv-action="create_event(group(start: event.start, end: event.end, summary: 'Mavo is awesome!'))">Create Event (with another title)</button>
   <button mv-action="create_event(group(start: event.start, end: event.end), 'Appointment #1 at Somewhere on July 3rd 10am-10:25am')">Create Two Events</button>
 
