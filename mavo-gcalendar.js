@@ -26,7 +26,15 @@
 			super.update.call(this, url, o);
 
 			const params = this.url.searchParams;
-			this.calendar = o.calendar ?? params.get("src") ?? "primary";
+
+			if (params.has("cid")) {
+				// Use atob() from the Github backend since we might need to handle Unicode.
+				this.calendar = Mavo.Backend.Github.atob(params.get("cid"));
+			}
+
+			// Order matters: calendar ID, shareable link, public URL, or the user's primary calendar.
+			this.calendar = o.calendar ?? this.calendar ?? params.get("src") ?? "primary";
+			this.calendar = encodeURIComponent(this.calendar);
 
 			this.searchParams = Mavo.options(o.options ?? "");
 		}
@@ -327,8 +335,8 @@
 					if (!withCredentials) {
 						searchParams.set("key", _.apiKey)
 					}
-					
-					return `${_.apiDomain}${encodeURIComponent(this.calendar)}/events?${searchParams}`;
+
+					return _.apiDomain + this.calendar + "/events?" + searchParams;
 				case "CREATE":
 					return _.apiDomain + this.calendar + "/events/quickAdd?text=";
 				case "UPDATE":
