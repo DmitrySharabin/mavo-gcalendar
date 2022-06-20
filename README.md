@@ -136,7 +136,7 @@ For more information, see the [Optional query parameters](https://developers.goo
 ## Demo
 
 ```markup
-<section mv-app="holidays" mv-source="https://calendar.google.com/calendar/embed?src=fr.french%23holiday%40group.v.calendar.google.com" mv-plugins="gcalendar">
+<section mv-app="holidays" mv-source="https://calendar.google.com/calendar/embed?src=fr.french%23holiday%40group.v.calendar.google.com" mv-source-options="maxResults: 5" mv-plugins="gcalendar">
   <h2>Jours Fériés en France</h2>
   <ul mv-list="events">
    <li mv-list-item>
