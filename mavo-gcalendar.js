@@ -510,7 +510,7 @@
 		"mv-gcalendar-calendar-not-found": "We couldn't find the calendar you specified.",
 		"mv-gcalendar-create-event-not-authenticated": "Only authenticated users can create events. Please, log in.",
 		"mv-gcalendar-create-event-no-start-or-end": "We couldn't create the event since it lacks required data: the start and/or the end time of the event.",
-		"mv-gcalendar-create-event-bad-data": "We couldn't create the event since it had incorrect data.",
+		"mv-gcalendar-create-event-bad-data": "We couldn't create the event since you provided incorrect data.",
 		"mv-gcalendar-delete-event-not-authenticated": "Only authenticated users can delete events. Please, log in.",
 		"mv-gcalendar-event-already-deleted": "Event “{event}” has already been deleted.",
 		"mv-gcalendar-delete-not-existing-event": "The parameter of delete_event() needs to be an existing event, {event} is not.",
