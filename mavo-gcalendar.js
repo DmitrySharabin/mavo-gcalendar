@@ -132,13 +132,13 @@
 
 		// === Actions ===
 
-		async create_event (...texts) {
+		async quick_create_event (...texts) {
 			if (!this.isAuthenticated()) {
 				this.mavo.error(this.mavo._("mv-gcalendar-create-event-not-authenticated"));
 				return;
 			}
 
-			const baseURL = this.apiURL({ action: "CREATE" });
+			const baseURL = this.apiURL({ action: "QUICK_CREATE" });
 
 			this.mavo.inProgress = this.mavo._("mv-gcalendar-creating-event");
 
@@ -337,7 +337,7 @@
 					}
 
 					return _.apiDomain + this.calendar + "/events?" + searchParams;
-				case "CREATE":
+				case "QUICK_CREATE":
 					return _.apiDomain + this.calendar + "/events/quickAdd?text=";
 				case "UPDATE":
 				case "DELETE":
@@ -375,7 +375,7 @@
 		}
 
 		const mavo = getMavo(Mavo.Functions.$evt.target);
-		mavo.source.create_event?.(...texts);
+		mavo.source.quick_create_event?.(...texts);
 	}
 
 	Mavo.Actions.Functions.delete_event = function (...ref) {
