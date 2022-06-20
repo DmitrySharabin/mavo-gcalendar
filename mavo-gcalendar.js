@@ -278,6 +278,10 @@
 							// No write permissions
 							this.mavo.error(this.mavo._("mv-gcalendar-write-permission-denied"));
 							break;
+						case 404:
+							// No event
+							this.mavo.error(this.mavo._("mv-gcalendar-event-not-found"));
+							break;
 						case 410:
 							// Event has already been deleted
 							Mavo.warn(this.mavo._("mv-gcalendar-event-already-deleted", { event: event.summary }));
@@ -338,6 +342,7 @@
 						}
 
 						const url = baseURL + event.id;
+						value = _.fixDates(value);
 						const response = await fetch(url, {
 							method: "PATCH",
 							headers: {
@@ -351,9 +356,18 @@
 							const error = (await response.json()).error.message;
 
 							switch (response.status) {
+								case 400:
+									// Bad data
+									this.mavo.error(this.mavo._("mv-gcalendar-update-event-bad-data"));
+									Mavo.warn(`${this.mavo._("mv-gcalendar-update-event-bad-data")}\nData was:\n${Mavo.toJSON(value)}`);
+									break;
 								case 403:
 									// No write permissions
 									this.mavo.error(this.mavo._("mv-gcalendar-write-permission-denied"));
+									break;
+								case 404:
+									// No event
+									this.mavo.error(this.mavo._("mv-gcalendar-event-not-found"));
 									break;
 								default:
 									Mavo.warn(error);
@@ -508,6 +522,7 @@
 		"mv-gcalendar-read-permission-denied": "You don't have permission to read data from the calendar. Please, log in.",
 		"mv-gcalendar-write-permission-denied": "You don't have permission to write data to the calendar.",
 		"mv-gcalendar-calendar-not-found": "We couldn't find the calendar you specified.",
+		"mv-gcalendar-event-not-found": "We couldn't find the event you specified.",
 		"mv-gcalendar-create-event-not-authenticated": "Only authenticated users can create events. Please, log in.",
 		"mv-gcalendar-create-event-no-start-or-end": "We couldn't create the event since it lacks required data: the start and/or the end time of the event.",
 		"mv-gcalendar-create-event-bad-data": "We couldn't create the event since you provided incorrect data.",
@@ -516,6 +531,7 @@
 		"mv-gcalendar-delete-not-existing-event": "The parameter of delete_event() needs to be an existing event, {event} is not.",
 		"mv-gcalendar-update-event-not-authenticated": "Only authenticated users can update events. Please, log in.",
 		"mv-gcalendar-update-not-existing-event": "The first parameter of update_event() needs to be one or more existing events, {event} is not.",
+		"mv-gcalendar-update-event-bad-data": "We couldn't update the event since you provided incorrect data.",
 		"mv-gcalendar-creating-event": "Creating event",
 		"mv-gcalendar-updating-event": "Updating event",
 		"mv-gcalendar-deleting-event": "Deleting event"
