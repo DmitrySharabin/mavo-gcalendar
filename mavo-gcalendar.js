@@ -420,11 +420,11 @@
 
 		static fixDates (event) {
 			// Convert date-time to ISO string
-			if (event.start.dateTime) {
+			if (event.start?.dateTime) {
 				event.start.dateTime = new Date(event.start.dateTime)?.toISOString();
 			}
 
-			if (event.end.dateTime) {
+			if (event.end?.dateTime) {
 				event.end.dateTime = new Date(event.end.dateTime)?.toISOString();
 			}
 
