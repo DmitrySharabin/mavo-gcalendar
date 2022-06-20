@@ -136,7 +136,7 @@ For more information, see the [Optional query parameters](https://developers.goo
 ## Demo
 
 ```markup
-<section mv-app="holidays" mv-source="https://calendar.google.com/calendar/embed?src=fr.french%23holiday%40group.v.calendar.google.com">
+<section mv-app="holidays" mv-source="https://calendar.google.com/calendar/embed?src=fr.french%23holiday%40group.v.calendar.google.com" mv-plugins="gcalendar">
   <h2>Jours Fériés en France</h2>
   <ul mv-list="events">
    <li mv-list-item>
@@ -148,7 +148,7 @@ For more information, see the [Optional query parameters](https://developers.goo
   </ul>
 </section>
 
-<section mv-app="mavo_events" mv-source="https://calendar.google.com/calendar/u/0?cid=cDlkOWxkOXZ2aHNrOXE5M2hhcDQxN2sxZHNAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ">
+<section mv-app="mavo_events" mv-source="https://calendar.google.com/calendar/u/0?cid=cDlkOWxkOXZ2aHNrOXE5M2hhcDQxN2sxZHNAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ" mv-plugins="gcalendar">
   <h2>Mavo Events</h2>
   <ul mv-list="events">
    <li mv-list-item>
