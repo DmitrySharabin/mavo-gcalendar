@@ -102,7 +102,7 @@ The plugin supports a number of options for customizing the way it reads data fr
 
 E.g., by specifying `mv-source-options="singleEvents, q: birthday, orderBy: startTime, maxResults: 15"` you will get not more than 15 events ordered by the start time that have text “birthday” in either of the following properties: `summary`, `description`, `location`, attendee's `displayName`, attendee's `email`. All recurring events will be expanded into instances (recurring events themselves won't be returned).
 
-**Warning:** You can use `orderBy: startTime` **only** with the `singleEvent` option together.
+**Warning:** You can use `orderBy: startTime` **only** with the `singleEvents` option together.
 
 For more information, see the [Optional query parameters](https://developers.google.com/calendar/api/v3/reference/events/list?hl=en_US#parameters) section of the documentation.
 
@@ -148,7 +148,7 @@ For more information, see the [Optional query parameters](https://developers.goo
   </ul>
 </section>
 
-<section mv-app="mavo_events" mv-source="https://calendar.google.com/calendar/u/0?cid=cDlkOWxkOXZ2aHNrOXE5M2hhcDQxN2sxZHNAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ" mv-plugins="gcalendar">
+<section mv-app="mavo_events" mv-source="https://calendar.google.com/calendar/u/0?cid=cDlkOWxkOXZ2aHNrOXE5M2hhcDQxN2sxZHNAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ" mv-source-options="singleEvents, orderBy: startTime" mv-plugins="gcalendar">
   <h2>Mavo Events</h2>
   <ul mv-list="events">
    <li mv-list-item>
