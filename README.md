@@ -160,6 +160,7 @@ For more information, see the [Optional query parameters](https://developers.goo
    </li>
   </ul>
 
+  <h2>Give the actions a try!</h2>
   <article property="event">
     <input property="summary" value="Event Title" />
     <p property="start">Start: <input type="datetime-local" property="dateTime" value="2022-06-20T12:00" /></p>
@@ -168,7 +169,7 @@ For more information, see the [Optional query parameters](https://developers.goo
 
   <button mv-action="create_event('Appointment #1 at Somewhere on July 3rd 10am-10:25am')">Create Event</button>
   <button mv-action="create_event(event)">Create Event</button>
-  <button mv-action="create_event(group(start: event.start, end: event.end))">Create Event (group())</button>
+  <button mv-action="create_event(group(start: event.start, end: event.end, summary: 'Mavo is awesome!'))">Create Event (with another title)</button>
   <button mv-action="create_event(group(start: event.start, end: event.end), 'Appointment #1 at Somewhere on July 3rd 10am-10:25am')">Create Two Events</button>
 
   <button mv-action="delete_event(events where starts(summary, 'Appointment'))">Delete events whose title starts with “Appointment”</button>
