@@ -132,6 +132,64 @@
 
 		// === Actions ===
 
+		async create_event (...events) {
+			if (!this.isAuthenticated()) {
+				this.mavo.error(this.mavo._("mv-gcalendar-create-event-not-authenticated"));
+				return;
+			}
+
+			const baseURL = this.apiURL({ action: "CREATE" });
+
+			this.mavo.inProgress = this.mavo._("mv-gcalendar-creating-event");
+
+			for (let event of events) {
+				if (!((event.start?.date || event.start?.dateTime) && (event.end?.date || event.end?.dateTime))) {
+					this.mavo.error(this.mavo._("mv-gcalendar-create-event-no-start-or-end"));
+					continue;
+				}
+
+				event = _.fixDates(event);
+
+				const response = await fetch(baseURL, {
+					method: "POST",
+					headers: {
+						Authorization: `Bearer ${this.accessToken}`,
+						"Content-Type": "application/json; charset=UTF-8"
+					},
+					body: JSON.stringify(event)
+				});
+
+				if (!response.ok) {
+					const error = (await response.json()).error.message;
+
+					switch (response.status) {
+						case 400:
+							// Bad data
+							this.mavo.error(this.mavo._("mv-gcalendar-create-event-bad-data"));
+							Mavo.warn(`${this.mavo._("mv-gcalendar-create-event-bad-data")}\nData was:\n${Mavo.toJSON(event)}`)
+							break;
+						case 403:
+							// No write permissions
+							this.mavo.error(this.mavo._("mv-gcalendar-write-permission-denied"));
+							break;
+						default:
+							Mavo.warn(error);
+					}
+				}
+			}
+
+			const data = await this.load();
+			if (Mavo.prototype.push) {
+				$.fire(this, "mv-remotedatachange", { data });
+			}
+			else {
+				// Mavo v0.2.4-
+				this.mavo.render(data);
+			}
+
+			this.mavo.inProgress = false;
+		}
+
 		async quick_create_event (...texts) {
 			if (!this.isAuthenticated()) {
 				this.mavo.error(this.mavo._("mv-gcalendar-create-event-not-authenticated"));
@@ -339,10 +397,28 @@
 					return _.apiDomain + this.calendar + "/events?" + searchParams;
 				case "QUICK_CREATE":
 					return _.apiDomain + this.calendar + "/events/quickAdd?text=";
+				case "CREATE":
 				case "UPDATE":
 				case "DELETE":
 					return _.apiDomain + this.calendar + "/events/";
 			}
+		}
+
+		static fixDates (event) {
+			// Convert date-time to ISO string
+			if (event.start.dateTime) {
+				event.start.dateTime = new Date(event.start.dateTime)?.toISOString();
+			}
+
+			if (event.end.dateTime) {
+				event.end.dateTime = new Date(event.end.dateTime)?.toISOString();
+			}
+
+			if (event.originalStartTime?.dateTime) {
+				event.originalStartTime.dateTime = new Date(event.originalStartTime.dateTime)?.toISOString();
+			}
+
+			return event;
 		}
 
 		oAuthParams = () => `&redirect_uri=${encodeURIComponent("https://auth.mavo.io")}&response_type=code&scope=${encodeURIComponent(_.scopes.join(" "))}`
@@ -369,13 +445,45 @@
 		}
 	});
 
-	Mavo.Actions.Functions.create_event = function (...texts) {
-		if (!texts.length || !texts[0].length) {
+	Mavo.Actions.Functions.create_event = async function (...ref) {
+		if (!ref.length) {
 			return;
 		}
 
+		const texts = [];
+		const events = [];
+
+		for (const r of ref) {
+			if (typeof r === "string") {
+				texts.push(r);
+			}
+			else if (Mavo.Actions.getNodes(r).length) {
+				const nodes = [];
+				for (const node of Mavo.Actions.getNodes(r)) {
+					if (node instanceof Mavo.Collection) {
+						nodes.push(...node.children);
+					} else {
+						nodes.push(node);
+					}
+				}
+
+				for (const node of nodes) {
+					events.push(node.getData());
+				}
+			}
+			else {
+				events.push(JSON.parse(Mavo.toJSON(r)));
+			}
+		}
+
 		const mavo = getMavo(Mavo.Functions.$evt.target);
-		mavo.source.quick_create_event?.(...texts);
+		if (texts.length) {
+			await mavo.source.quick_create_event?.(...texts);
+		}
+
+		if (events.length) {
+			await mavo.source.create_event?.(...events);
+		}
 	}
 
 	Mavo.Actions.Functions.delete_event = function (...ref) {
@@ -401,6 +509,8 @@
 		"mv-gcalendar-write-permission-denied": "You don't have permission to write data to the calendar.",
 		"mv-gcalendar-calendar-not-found": "We couldn't find the calendar you specified.",
 		"mv-gcalendar-create-event-not-authenticated": "Only authenticated users can create events. Please, log in.",
+		"mv-gcalendar-create-event-no-start-or-end": "We couldn't create the event since it lacks required data: the start and/or the end time of the event.",
+		"mv-gcalendar-create-event-bad-data": "We couldn't create the event since it had incorrect data.",
 		"mv-gcalendar-delete-event-not-authenticated": "Only authenticated users can delete events. Please, log in.",
 		"mv-gcalendar-event-already-deleted": "Event “{event}” has already been deleted.",
 		"mv-gcalendar-delete-not-existing-event": "The parameter of delete_event() needs to be an existing event, {event} is not.",
