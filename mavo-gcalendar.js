@@ -178,12 +178,12 @@
 				}
 			}
 
-			const data = await this.load();
 			if (Mavo.prototype.push) {
-				$.fire(this, "mv-remotedatachange", { data });
+				$.fire(this, "mv-remotedatachange");
 			}
 			else {
 				// Mavo v0.2.4-
+				const data = await this.load();
 				this.mavo.render(data);
 			}
 
@@ -223,12 +223,12 @@
 				}
 			}
 
-			const data = await this.load();
 			if (Mavo.prototype.push) {
-				$.fire(this, "mv-remotedatachange", { data });
+				$.fire(this, "mv-remotedatachange");
 			}
 			else {
 				// Mavo v0.2.4-
+				const data = await this.load();
 				this.mavo.render(data);
 			}
 
@@ -292,12 +292,12 @@
 				}
 			}
 
-			const data = await this.load();
 			if (Mavo.prototype.push) {
-				$.fire(this, "mv-remotedatachange", { data });
+				$.fire(this, "mv-remotedatachange");
 			}
 			else {
 				// Mavo v0.2.4-
+				const data = await this.load();
 				this.mavo.render(data);
 			}
 
@@ -381,12 +381,12 @@
 				result = Array.isArray(result)? result : [result];
 				await Promise.allSettled(result);
 
-				const data = await this.load();
 				if (Mavo.prototype.push) {
-					$.fire(this, "mv-remotedatachange", { data });
+					$.fire(this, "mv-remotedatachange");
 				}
 				else {
 					// Mavo v0.2.4-
+					const data = await this.load();
 					this.mavo.render(data);
 				}
 
