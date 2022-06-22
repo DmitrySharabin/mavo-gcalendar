@@ -178,16 +178,7 @@
 				}
 			}
 
-			if (Mavo.prototype.push) {
-				$.fire(this, "mv-remotedatachange");
-			}
-			else {
-				// Mavo v0.2.4-
-				const data = await this.load();
-				this.mavo.render(data);
-			}
-
-			this.mavo.inProgress = false;
+			await this.mavo.load();
 		}
 
 		async quick_create_event (...texts) {
@@ -223,16 +214,7 @@
 				}
 			}
 
-			if (Mavo.prototype.push) {
-				$.fire(this, "mv-remotedatachange");
-			}
-			else {
-				// Mavo v0.2.4-
-				const data = await this.load();
-				this.mavo.render(data);
-			}
-
-			this.mavo.inProgress = false;
+			await this.mavo.load();
 		}
 
 		async delete_event (...ref) {
@@ -292,16 +274,7 @@
 				}
 			}
 
-			if (Mavo.prototype.push) {
-				$.fire(this, "mv-remotedatachange");
-			}
-			else {
-				// Mavo v0.2.4-
-				const data = await this.load();
-				this.mavo.render(data);
-			}
-
-			this.mavo.inProgress = false;
+			await this.mavo.load();
 		}
 
 		async update_event (ref, values) {
@@ -381,16 +354,7 @@
 				result = Array.isArray(result)? result : [result];
 				await Promise.allSettled(result);
 
-				if (Mavo.prototype.push) {
-					$.fire(this, "mv-remotedatachange");
-				}
-				else {
-					// Mavo v0.2.4-
-					const data = await this.load();
-					this.mavo.render(data);
-				}
-
-				this.mavo.inProgress = false;
+				await this.mavo.load();
 			}
 		}
 
